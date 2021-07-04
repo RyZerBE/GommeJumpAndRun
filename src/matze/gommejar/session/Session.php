@@ -9,7 +9,6 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use function is_null;
 use function mt_rand;
 
 class Session {
@@ -88,7 +87,7 @@ class Session {
         /** @var JumpType $jumpType */
         $jumpType = JumpTypeManager::getInstance()->getRandomJumpType();
         $position = $jumpType->init($this);
-        if(is_null($position)) {
+        if($position === null) {
             $this->targetVector3 = null;
             return;
         }
