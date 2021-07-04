@@ -9,7 +9,6 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use function array_rand;
 use function is_null;
 use function mt_rand;
 

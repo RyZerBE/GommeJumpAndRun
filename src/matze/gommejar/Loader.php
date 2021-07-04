@@ -59,7 +59,7 @@ class Loader extends PluginBase {
     private function initJumpAndRuns(): void {
         $config = new Config($this->getDataFolder() . "/jump_and_runs.json");
         foreach($config->getAll() as $key => $value) {
-            $this->jumpAndRuns[] = new JumpAndRun(new Vector3($value["X"], $value["Y"], $value["Z"]), $key);
+            $this->jumpAndRuns[] = new JumpAndRun(new Vector3($value["X"], $value["Y"], $value["Z"]), $value["Level"]);
         }
     }
 }

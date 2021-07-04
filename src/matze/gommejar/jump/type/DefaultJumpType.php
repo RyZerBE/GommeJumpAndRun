@@ -26,7 +26,6 @@ class DefaultJumpType extends JumpType {
         $player = $session->getPlayer();
         $level = $player->getLevelNonNull();
 
-
         $tries = 100;
         $position = new Vector3($player->x + $sides[array_rand($sides)], ($player->y - 1) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
         while(

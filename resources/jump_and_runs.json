@@ -1,7 +1,8 @@
 {
-  "rbelobbymatze": {
+  "1": {
     "X": 174,
     "Y": 71,
-    "Z": 340
+    "Z": 340,
+    "Level": "rbelobbymatze"
   }
 }
