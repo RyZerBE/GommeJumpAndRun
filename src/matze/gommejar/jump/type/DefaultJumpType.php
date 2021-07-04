@@ -27,15 +27,15 @@ class DefaultJumpType extends JumpType {
         $level = $player->getLevelNonNull();
 
         $tries = 100;
-        $position = new Vector3($player->x + $sides[array_rand($sides)], ($player->y - 1) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
-        while(
-            ($level->getBlock($position->subtract(0, 1))->getId() !== 0 ||
+        $position = new Vector3($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y - 1) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
+        while((
                 $level->getBlock($position)->getId() !== 0 ||
                 $level->getBlock($position->add(0, 1))->getId() !== 0 ||
+                $level->getBlock($position->add(0, 2))->getId() !== 0 ||
                 $position->y >= 240
             ) && $tries > 0
         ) {
-            $position = $position->setComponents($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
+            $position = $position->setComponents($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y - 1) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
             $tries--;
         }
         if($tries <= 0) return null;
