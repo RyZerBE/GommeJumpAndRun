@@ -2,6 +2,7 @@
 
 namespace matze\gommejar;
 
+use HimmelKreis4865\StatsSystem\provider\ProviderUtils;
 use matze\gommejar\jump\JumpTypeManager;
 use matze\gommejar\listener\BlockUpdateListener;
 use matze\gommejar\listener\PlayerMoveListener;
@@ -13,6 +14,7 @@ use pocketmine\Server;
 use pocketmine\utils\Config;
 
 class Loader extends PluginBase {
+    public const STATS_CATEGORY = "jumpAndRun";
 
     /** @var Loader|null */
     private static $instance = null;
@@ -30,6 +32,10 @@ class Loader extends PluginBase {
 
         SessionManager::getInstance();
         JumpTypeManager::getInstance();
+
+        ProviderUtils::createCategory(Loader::STATS_CATEGORY, [
+            "score" => "INT"
+        ]);
     }
 
     /**

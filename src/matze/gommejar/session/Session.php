@@ -2,13 +2,16 @@
 
 namespace matze\gommejar\session;
 
+use HimmelKreis4865\StatsSystem\utils\AsyncUtils;
 use matze\gommejar\jump\JumpType;
 use matze\gommejar\jump\JumpTypeManager;
+use matze\gommejar\Loader;
 use pocketmine\block\Block;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function exec;
 use function mt_rand;
 
 class Session {
@@ -107,12 +110,29 @@ class Session {
         if($this->lastVector3 !== null) $blocks[] = $this->lastVector3;
         if($this->targetVector3 !== null) $blocks[] = $this->targetVector3;
 
+        $player = $this->getPlayer();
         foreach($blocks as $block) {
-            $level = $this->getPlayer()->getLevelNonNull();
+            $level = $player->getLevelNonNull();
 
             $level->addParticle(new DestroyBlockParticle($block, $level->getBlock($block)));
             $level->setBlockIdAt($block->x, $block->y, $block->z, 0);
             $level->setBlockDataAt($block->x, $block->y, $block->z, 0);
         }
+
+        $score = $this->getScore();
+        $playername = $player->getName();
+        AsyncUtils::getStatistics($playername, Loader::STATS_CATEGORY, function($result) use ($playername, $score): void {
+            if($result === null) {
+                AsyncUtils::updateStatistics($playername, [
+                    Loader::STATS_CATEGORY => [
+                        "m_score" => $score,
+                        "score" => $score
+                    ]
+                ]);
+            } else {
+                if($result->score < $score) AsyncUtils::updateStatistic($playername, Loader::STATS_CATEGORY, "score", $score);
+                if($result->m_score < $score) AsyncUtils::updateStatistic($playername, Loader::STATS_CATEGORY, "m_score", $score);
+            }
+        });
     }
 }

@@ -11,8 +11,10 @@ class BlockUpdateListener implements Listener {
 
     /**
      * @param BlockUpdateEvent $event
+     * @priority HIGHEST
      */
     public function onBlockUpdate(BlockUpdateEvent $event): void {
+        if($event->isCancelled()) return;
         $block = $event->getBlock();
 
         /** @var Session $session */
