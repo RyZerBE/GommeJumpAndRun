@@ -7,15 +7,14 @@ use matze\gommejar\session\Session;
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use function array_rand;
-use function mt_rand;
 
-class DefaultJumpType extends JumpType {
+class FenceJumpType extends JumpType {
 
     /**
      * @return int
      */
     public function getChance(): int{
-        return 100;
+        return 50;
     }
 
     /**
@@ -28,7 +27,7 @@ class DefaultJumpType extends JumpType {
         $level = $player->getLevelNonNull();
 
         $tries = 100;
-        $position = new Vector3($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y - 1) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
+        $position = new Vector3($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y - 1), $player->z + $sides[array_rand($sides)]);
         while((
                 $level->getBlock($position)->getId() !== 0 ||
                 $level->getBlock($position->add(0, 1))->getId() !== 0 ||
@@ -36,7 +35,7 @@ class DefaultJumpType extends JumpType {
                 $position->y >= 240
             ) && $tries > 0
         ) {
-            $position = $position->setComponents($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y - 1) + mt_rand(0, 1), $player->z + $sides[array_rand($sides)]);
+            $position = $position->setComponents($player->x + $sides[array_rand($sides)], ($session->getLastVector3() !== null ? $session->getLastVector3()->y : $player->y - 1), $player->z + $sides[array_rand($sides)]);
             $tries--;
         }
         if($tries <= 0) return null;
@@ -47,20 +46,20 @@ class DefaultJumpType extends JumpType {
      * @return Block
      */
     public function getTargetBlock(): Block{
-        return Block::get(Block::CONCRETE_POWDER, mt_rand(0, 15));
+        return Block::get(Block::FENCE);
     }
 
     /**
      * @return Block
      */
     public function getSucceedBlock(): Block{
-        return Block::get(Block::CONCRETE);
+        return Block::get(Block::FENCE, 1);
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function ignoreSucceedBlockMeta(): bool{
-        return true;
+    public function getMinScore(): int{
+        return 10;
     }
 }

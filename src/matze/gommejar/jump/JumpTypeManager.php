@@ -3,7 +3,10 @@
 namespace matze\gommejar\jump;
 
 use matze\gommejar\jump\type\DefaultJumpType;
+use matze\gommejar\jump\type\FenceJumpType;
+use matze\gommejar\jump\type\GlassPaneJumpType;
 use matze\gommejar\Loader;
+use matze\gommejar\session\Session;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use function array_rand;
@@ -12,14 +15,16 @@ class JumpTypeManager {
     use SingletonTrait;
 
     /** @var array  */
-    private $jumpTypes = [];
+    private array $jumpTypes = [];
 
     /**
      * JumpTypeManager constructor.
      */
     public function __construct(){
         $types = [
-            new DefaultJumpType()
+            new DefaultJumpType(),
+            new FenceJumpType(),
+            new GlassPaneJumpType()
         ];
         foreach($types as $type) {
             $this->registerJumpType($type);
@@ -40,9 +45,14 @@ class JumpTypeManager {
     }
 
     /**
+     * @param Session $session
      * @return JumpType
      */
-    public function getRandomJumpType(): JumpType {
-        return $this->jumpTypes[array_rand($this->jumpTypes)];
+    public function getRandomJumpType(Session $session): JumpType {
+        $jumpType = $this->jumpTypes[array_rand($this->jumpTypes)];
+        while($jumpType->getMinScore() > $session->getScore()) {
+            $jumpType = $this->jumpTypes[array_rand($this->jumpTypes)];
+        }
+        return $jumpType;
     }
 }

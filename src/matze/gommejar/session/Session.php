@@ -17,15 +17,18 @@ use function mt_rand;
 class Session {
 
     /** @var Player */
-    private $player;
+    private Player $player;
 
     /** @var Vector3|null */
-    private $lastVector3 = null;
+    private ?Vector3 $lastVector3 = null;
     /** @var Vector3|null */
-    private $targetVector3 = null;
+    private ?Vector3 $targetVector3 = null;
 
     /** @var int  */
-    private $score = 0;
+    private int $score = 0;
+
+    /** @var JumpType|null  */
+    private ?JumpType $lastJumpType = null;
 
     /**
      * Session constructor.
@@ -81,14 +84,16 @@ class Session {
             $level->setBlockDataAt($lastVector3->x, $lastVector3->y, $lastVector3->z, 0);
         }
         $position = $this->getTargetVector3();
-        if($position !== null) {
-            $level->setBlockIdAt($position->x, $position->y, $position->z, Block::CONCRETE);
+        if($position !== null && $this->lastJumpType !== null) {
+            $level->setBlockIdAt($position->x, $position->y, $position->z, $this->lastJumpType->getSucceedBlock()->getId());
+            if(!$this->lastJumpType->ignoreSucceedBlockMeta()) {
+                $level->setBlockDataAt($position->x, $position->y, $position->z, $this->lastJumpType->getSucceedBlock()->getDamage());
+            }
         }
 
         $this->setLastVector3($this->getTargetVector3());
 
-        /** @var JumpType $jumpType */
-        $jumpType = JumpTypeManager::getInstance()->getRandomJumpType();
+        $this->lastJumpType = $jumpType = JumpTypeManager::getInstance()->getRandomJumpType($this);
         $position = $jumpType->init($this);
         if($position === null) {
             $this->targetVector3 = null;
@@ -97,8 +102,9 @@ class Session {
         $this->score++;
         $this->targetVector3 = $position->floor();
 
-        $level->setBlockIdAt($position->x, $position->y, $position->z, Block::CONCRETE_POWDER);
-        $level->setBlockDataAt($position->x, $position->y, $position->z, mt_rand(0, 15));
+        $block = $jumpType->getTargetBlock();
+        $level->setBlockIdAt($position->x, $position->y, $position->z, $block->getId());
+        $level->setBlockDataAt($position->x, $position->y, $position->z, $block->getDamage());
         for($i = 0; $i <= 10; $i++) {
             $tempPosition = $position->floor()->add(0.5, 0.5, 0.5)->add((mt_rand(-10, 10) / 10), (mt_rand(-10, 10) / 10), (mt_rand(-10, 10) / 10));
             $level->addParticle(new HappyVillagerParticle($tempPosition));
