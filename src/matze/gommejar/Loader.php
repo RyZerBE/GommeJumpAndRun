@@ -2,25 +2,28 @@
 
 namespace matze\gommejar;
 
-use HimmelKreis4865\StatsSystem\provider\ProviderUtils;
+use baubolp\core\provider\AsyncExecutor;
 use matze\gommejar\jump\JumpTypeManager;
 use matze\gommejar\listener\BlockUpdateListener;
 use matze\gommejar\listener\PlayerMoveListener;
 use matze\gommejar\object\JumpAndRun;
 use matze\gommejar\session\SessionManager;
+use mysqli;
 use pocketmine\math\Vector3;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\Config;
+use ryzerbe\statssystem\provider\StatsProvider;
+use ryzerbe\statssystem\StatsSystem;
 
 class Loader extends PluginBase {
     public const STATS_CATEGORY = "jumpAndRun";
 
     /** @var Loader|null */
-    private static $instance = null;
+    private static ?Loader $instance = null;
 
     /** @var array  */
-    private $jumpAndRuns = [];
+    private array $jumpAndRuns = [];
 
     public function onEnable(): void{
         self::$instance = $this;
@@ -33,9 +36,13 @@ class Loader extends PluginBase {
         SessionManager::getInstance();
         JumpTypeManager::getInstance();
 
-        ProviderUtils::createCategory(Loader::STATS_CATEGORY, [
-            "score" => "INT"
-        ]);
+        AsyncExecutor::submitMySQLAsyncTask(StatsSystem::DATABASE, function(mysqli $mysqli): void {
+            StatsProvider::createCategory($mysqli, Loader::STATS_CATEGORY, [
+                "score" => "INT"
+            ], [
+                "score" => 0
+            ]);
+        });
     }
 
     /**
