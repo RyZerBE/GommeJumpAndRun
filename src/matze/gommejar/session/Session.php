@@ -2,16 +2,18 @@
 
 namespace matze\gommejar\session;
 
+use baubolp\core\provider\AsyncExecutor;
 use HimmelKreis4865\StatsSystem\utils\AsyncUtils;
 use matze\gommejar\jump\JumpType;
 use matze\gommejar\jump\JumpTypeManager;
 use matze\gommejar\Loader;
-use pocketmine\block\Block;
+use mysqli;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use function exec;
+use ryzerbe\statssystem\provider\StatsProvider;
+use ryzerbe\statssystem\StatsSystem;
 use function mt_rand;
 
 class Session {
@@ -127,17 +129,16 @@ class Session {
 
         $score = $this->getScore();
         $playername = $player->getName();
-        AsyncUtils::getStatistics($playername, Loader::STATS_CATEGORY, function($result) use ($playername, $score): void {
-            if($result === null) {
-                AsyncUtils::updateStatistics($playername, [
-                    Loader::STATS_CATEGORY => [
-                        "m_score" => $score,
-                        "score" => $score
-                    ]
-                ]);
+        AsyncExecutor::submitMySQLAsyncTask(StatsSystem::DATABASE, function(mysqli $mysqli) use ($score, $playername): void {
+            $statistics = StatsProvider::getStatistics($mysqli, $playername, Loader::STATS_CATEGORY);
+            if($statistics === null) {
+                StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "score", $score);
+                StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "m_score", $score);
             } else {
-                if($result->score < $score) AsyncUtils::updateStatistic($playername, Loader::STATS_CATEGORY, "score", $score);
-                if($result->m_score < $score) AsyncUtils::updateStatistic($playername, Loader::STATS_CATEGORY, "m_score", $score);
+                StatsProvider::checkMonthlyStatistic($mysqli, $playername, Loader::STATS_CATEGORY);
+
+                if($statistics["score"] < $score) StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "score", $score);
+                if($statistics["m_score"] < $score) StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "m_score", $score);
             }
         });
     }
