@@ -132,13 +132,13 @@ class Session {
         AsyncExecutor::submitMySQLAsyncTask(StatsSystem::DATABASE, function(mysqli $mysqli) use ($score, $playername): void {
             $statistics = StatsProvider::getStatistics($mysqli, $playername, Loader::STATS_CATEGORY);
             if($statistics === null) {
-                StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "score", $score);
-                StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "m_score", $score);
+                StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "score", $score, false);
+                StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "m_score", $score, false);
             } else {
                 StatsProvider::checkMonthlyStatistic($mysqli, $playername, Loader::STATS_CATEGORY);
 
-                if($statistics["score"] < $score) StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "score", $score);
-                if($statistics["m_score"] < $score) StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "m_score", $score);
+                if($statistics["score"] < $score) StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "score", $score, false);
+                if($statistics["m_score"] < $score) StatsProvider::updateStatistic($mysqli, $playername, Loader::STATS_CATEGORY, "m_score", $score, false);
             }
         });
     }

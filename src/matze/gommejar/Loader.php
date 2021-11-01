@@ -6,6 +6,7 @@ use baubolp\core\provider\AsyncExecutor;
 use matze\gommejar\jump\JumpTypeManager;
 use matze\gommejar\listener\BlockUpdateListener;
 use matze\gommejar\listener\PlayerMoveListener;
+use matze\gommejar\listener\PlayerQuitListener;
 use matze\gommejar\object\JumpAndRun;
 use matze\gommejar\session\SessionManager;
 use mysqli;
@@ -17,6 +18,7 @@ use ryzerbe\statssystem\provider\StatsProvider;
 use ryzerbe\statssystem\StatsSystem;
 
 class Loader extends PluginBase {
+
     public const STATS_CATEGORY = "jumpAndRun";
 
     /** @var Loader|null */
@@ -62,8 +64,10 @@ class Loader extends PluginBase {
     private function initListener(): void {
         $listeners = [
             new PlayerMoveListener(),
-            new BlockUpdateListener()
+            new BlockUpdateListener(),
+            new PlayerQuitListener()
         ];
+
         foreach($listeners as $listener) {
             Server::getInstance()->getPluginManager()->registerEvents($listener, $this);
         }
