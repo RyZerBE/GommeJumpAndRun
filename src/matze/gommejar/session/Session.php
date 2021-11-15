@@ -2,8 +2,6 @@
 
 namespace matze\gommejar\session;
 
-use baubolp\core\provider\AsyncExecutor;
-use HimmelKreis4865\StatsSystem\utils\AsyncUtils;
 use matze\gommejar\jump\JumpType;
 use matze\gommejar\jump\JumpTypeManager;
 use matze\gommejar\Loader;
@@ -12,6 +10,7 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use ryzerbe\core\util\async\AsyncExecutor;
 use ryzerbe\statssystem\provider\StatsProvider;
 use ryzerbe\statssystem\StatsSystem;
 use function mt_rand;

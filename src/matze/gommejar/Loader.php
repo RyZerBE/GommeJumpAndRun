@@ -2,7 +2,6 @@
 
 namespace matze\gommejar;
 
-use baubolp\core\provider\AsyncExecutor;
 use matze\gommejar\jump\JumpTypeManager;
 use matze\gommejar\listener\BlockUpdateListener;
 use matze\gommejar\listener\PlayerMoveListener;
@@ -14,6 +13,7 @@ use pocketmine\math\Vector3;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\Config;
+use ryzerbe\core\util\async\AsyncExecutor;
 use ryzerbe\statssystem\provider\StatsProvider;
 use ryzerbe\statssystem\StatsSystem;
 

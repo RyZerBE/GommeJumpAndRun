@@ -7,6 +7,7 @@ use matze\gommejar\session\Session;
 use matze\gommejar\session\SessionManager;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\utils\TextFormat;
 
 class PlayerMoveListener implements Listener {
 
@@ -34,9 +35,10 @@ class PlayerMoveListener implements Listener {
             $session->initBlockPosition();
             return;
         }
-        if($player->isOnGround() && $player->floor()->subtract(0, 1)->equals($session->getTargetVector3())) {
+        if($player->isOnGround() && $player->floor()->subtract(0, 1)->equals($session->getTargetVector3())){
             $player->playSound("random.orb", 1, 1, [$player]);
             $session->initBlockPosition();
+            $player->sendActionBarMessage(TextFormat::GOLD."Score: ".TextFormat::WHITE.$session->getScore());
         }
 
         if($player->y <= ($session->getTargetVector3()->y - 1)) {
