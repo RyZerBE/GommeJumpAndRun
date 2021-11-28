@@ -4,5 +4,11 @@
     "Y": 96,
     "Z": 260,
     "Level": "ryzerbe_lobby"
+  },
+  "2": {
+    "X": 228,
+    "Y": 97,
+    "Z": 260,
+    "Level": "Lobby"
   }
 }
