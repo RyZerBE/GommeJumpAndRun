@@ -101,7 +101,7 @@ class Session {
             return;
         }
         $this->score++;
-        $this->targetVector3 = $position->floor();
+        $this->targetVector3 = $position = $position->floor();
 
         $block = $jumpType->getTargetBlock();
         $level->setBlockIdAt($position->x, $position->y, $position->z, $block->getId());

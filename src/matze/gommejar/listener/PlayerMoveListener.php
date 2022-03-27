@@ -10,17 +10,13 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\utils\TextFormat;
 
 class PlayerMoveListener implements Listener {
-
-    /**
-     * @param PlayerMoveEvent $event
-     */
     public function onMove(PlayerMoveEvent $event): void {
         $player = $event->getPlayer();
         /** @var Session|null $session */
         $session = SessionManager::getInstance()->getSession($player);
         if($session === null){
             foreach(Loader::getInstance()->getJumpAndRuns() as $jumpAndRun) {
-                if(!$jumpAndRun->equals($player)) continue;
+                if($player->distanceSquared($jumpAndRun->getVector3()) > 1) continue;
                 /** @var Session $session */
                 $session = SessionManager::getInstance()->addSession($player);
                 $player->playSound("respawn_anchor.deplete", 1, 1, [$player]);
@@ -35,7 +31,7 @@ class PlayerMoveListener implements Listener {
             $session->initBlockPosition();
             return;
         }
-        if($player->isOnGround() && $player->floor()->subtract(0, 1)->equals($session->getTargetVector3())){
+        if($player->isOnGround() && $player->floor()->down()->equals($session->getTargetVector3())){
             $player->playSound("random.orb", 1, 1, [$player]);
             $session->initBlockPosition();
             $player->sendActionBarMessage(TextFormat::GOLD."Score: ".TextFormat::WHITE.$session->getScore());
